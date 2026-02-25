@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Will You Be My Valentine?</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #ff2a5f;
+            --primary-dark: #cc1842;
+            --bg-color: #fff0f3;
+            --text-color: #590d22;
+            --white: #ffffff;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: radial-gradient(circle at center, #fff0f3 0%, #ffccd5 100%);
+            color: var(--text-color);
+            min-height: 100vh;
+            /* Fallback */
+            min-height: 100dvh;
+            /* Mobile browser bottom-bar fix */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Background Animated Hearts */
+        .bg-hearts {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .bg-heart {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: rgba(255, 42, 95, 0.15);
+            transform: rotate(45deg);
+            animation: floatbg linear infinite;
+        }
+
+        .bg-heart::before,
+        .bg-heart::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: rgba(255, 42, 95, 0.15);
+        }
+
+        .bg-heart::before {
+            left: -10px;
+        }
+
+        .bg-heart::after {
+            top: -10px;
+        }
+
+        @keyframes floatbg {
+            0% {
+                transform: translateY(100vh) rotate(45deg) scale(0.5);
+                opacity: 0;
+            }
+
+            20% {
+                opacity: 1;
+            }
+
+            80% {
+                opacity: 1;
+            }
+
+            100% {
+                transform: translateY(-20vh) rotate(45deg) scale(1.5);
+                opacity: 0;
+            }
+        }
+
+        /* Main Container */
+        .container {
+            text-align: center;
+            z-index: 10;
+            padding: 3rem 2rem;
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-radius: 30px;
+            box-shadow: 0 20px 50px rgba(255, 42, 95, 0.15);
+            border: 2px solid rgba(255, 255, 255, 0.8);
+            max-width: 90%;
+            width: 700px;
+            transition: transform 0.3s ease;
+        }
+
+        h1 {
+            font-size: clamp(2.5rem, 6vw, 4.5rem);
+            font-weight: 900;
+            margin-bottom: 3rem;
+            color: var(--primary);
+            text-transform: uppercase;
+            text-shadow: 2px 4px 8px rgba(255, 42, 95, 0.2);
+            line-height: 1.1;
+            letter-spacing: -1px;
+        }
+
+        .buttons {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            align-items: center;
+            position: relative;
+            min-height: 80px;
+        }
+
+        button {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.8rem;
+            font-weight: 800;
+            padding: 1rem 3.5rem;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.2s, background-color 0.2s;
+            outline: none;
+            letter-spacing: 1px;
+        }
+
+        .btn-yes {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: var(--white);
+            box-shadow: 0 10px 25px rgba(255, 42, 95, 0.4);
+            z-index: 20;
+        }
+
+        .btn-yes:hover {
+            transform: scale(1.15) translateY(-5px);
+            box-shadow: 0 15px 30px rgba(255, 42, 95, 0.5);
+        }
+
+        .btn-yes:active {
+            transform: scale(0.95);
+        }
+
+        .btn-no {
+            background-color: var(--white);
+            color: var(--primary);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+            position: relative;
+            transition: all 0.3s ease-out;
+            z-index: 30;
+        }
+
+        footer {
+            position: fixed;
+            bottom: 20px;
+            width: 100%;
+            text-align: center;
+            font-size: 1rem;
+            color: var(--primary-dark);
+            opacity: 0.8;
+            font-weight: 600;
+            z-index: 10;
+            left: 0;
+            padding: 0 10px;
+        }
+
+        /* Success screen styles */
+        .success-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: radial-gradient(circle at center, var(--primary) 0%, var(--primary-dark) 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.6s ease-in-out;
+            overflow: hidden;
+        }
+
+        .success-overlay.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .success-text {
+            font-size: clamp(3rem, 10vw, 7rem);
+            font-weight: 900;
+            color: var(--white);
+            text-align: center;
+            text-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            transform: scale(0.3) translateY(50px);
+            opacity: 0;
+            transition: all 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transition-delay: 0.2s;
+            z-index: 101;
+            padding: 0 20px;
+        }
+
+        .success-overlay.active .success-text {
+            transform: scale(1) translateY(0);
+            opacity: 1;
+        }
+
+        /* Foreground Hearts for Success overlay */
+        .heart {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            background: var(--white);
+            transform: rotate(45deg);
+            animation: floatup ease-in infinite;
+            opacity: 0;
+        }
+
+        .heart::before,
+        .heart::after {
+            content: '';
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: var(--white);
+        }
+
+        .heart::before {
+            left: -15px;
+        }
+
+        .heart::after {
+            top: -15px;
+        }
+
+        @keyframes floatup {
+            0% {
+                transform: translateY(110vh) rotate(45deg) scale(0.5);
+                opacity: 0;
+            }
+
+            10% {
+                opacity: 0.9;
+            }
+
+            90% {
+                opacity: 0.9;
+            }
+
+            100% {
+                transform: translateY(-20vh) rotate(45deg) scale(1.5);
+                opacity: 0;
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .buttons {
+                flex-direction: column;
+                gap: 1.5rem;
+            }
+
+            .btn-yes,
+            .btn-no {
+                font-size: 1.4rem;
+                padding: 0.8rem 2.5rem;
+                width: auto;
+                min-width: 150px;
+                max-width: 80%;
+            }
+
+            h1 {
+                margin-bottom: 2rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="bg-hearts" id="bg-hearts"></div>
+
+    <div class="container" id="main-container">
+        <h1>WILL YOU BE MY VALENTINE ?</h1>
+        <div class="buttons">
+            <button class="btn-yes" id="btn-yes">YES</button>
+            <button class="btn-no" id="btn-no">NO</button>
+        </div>
+    </div>
+
+    <footer>© 2026 yasiru sanketh. All rights reserved.</footer>
+
+    <div class="success-overlay" id="success-overlay">
+        <div class="success-text">YEAH, I KNEW IT ❤️</div>
+    </div>
+
+    <script>
+        // Create subtle background floating hearts
+        const bgHeartsContainer = document.getElementById('bg-hearts');
+        for (let i = 0; i < 25; i++) {
+            createHeart(bgHeartsContainer, 'bg-heart', true);
+        }
+
+        function createHeart(container, className, isBg = false) {
+            const heart = document.createElement('div');
+            heart.classList.add(className);
+            heart.style.left = Math.random() * 100 + 'vw';
+
+            if (isBg) {
+                heart.style.animationDuration = (Math.random() * 10 + 10) + 's';
+                heart.style.animationDelay = (Math.random() * -20) + 's'; // start at random times immediately
+                const size = Math.random() * 15 + 10;
+                applyDynamicHeartSize(heart, size);
+            } else {
+                heart.style.animationDuration = (Math.random() * 3 + 3) + 's';
+                heart.style.animationDelay = Math.random() * 0.5 + 's';
+                const size = Math.random() * 30 + 15;
+                applyDynamicHeartSize(heart, size);
+            }
+            container.appendChild(heart);
+        }
+
+        function applyDynamicHeartSize(element, size) {
+            element.style.width = size + 'px';
+            element.style.height = size + 'px';
+            const uuid = 'heart-' + Math.random().toString(36).substring(2, 9);
+            element.classList.add(uuid);
+
+            const style = document.createElement('style');
+            style.innerHTML = `
+                .${uuid}::before, .${uuid}::after {
+                    width: ${size}px;
+                    height: ${size}px;
+                }
+                .${uuid}::before { left: -${size / 2}px; top: 0; }
+                .${uuid}::after { left: 0; top: -${size / 2}px; }
+            `;
+            document.head.appendChild(style);
+        }
+
+        const btnNo = document.getElementById('btn-no');
+        const btnYes = document.getElementById('btn-yes');
+        const successOverlay = document.getElementById('success-overlay');
+
+        // Function to move the "NO" button safely
+        function moveButton(e) {
+            // Prevent only touchstart to stop the default click-through scrolling behavior
+            if (e && e.type === 'touchstart') {
+                if (e.cancelable) {
+                    e.preventDefault();
+                }
+            }
+
+            // Move the button purely out of the flex container strictly to the body to prevent backdrop-filter stacking bugs
+            if (btnNo.parentElement !== document.body) {
+                // Get absolute coordinates before moving to ensure smooth transition
+                let rect = btnNo.getBoundingClientRect();
+                document.body.appendChild(btnNo);
+                btnNo.style.position = 'fixed';
+                btnNo.style.width = rect.width + 'px';
+                btnNo.style.height = rect.height + 'px';
+                btnNo.style.left = rect.left + 'px';
+                btnNo.style.top = rect.top + 'px';
+                btnNo.style.margin = '0';
+                btnNo.style.maxWidth = 'none'; // Clear any max-width constraints from CSS
+                btnNo.style.transition = 'none'; // Instant snappy movement
+            }
+
+            let btnWidth = btnNo.offsetWidth;
+            let btnHeight = btnNo.offsetHeight;
+
+            // Identify highest-resolution screen variables available across desktop/mobile browsers
+            const screenW = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
+            const screenH = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
+
+            // Establish safe playground boundaries (20px away from all edges)
+            const padding = 20;
+            const maxSafeX = Math.max(padding, screenW - btnWidth - padding);
+            const maxSafeY = Math.max(padding, screenH - btnHeight - padding);
+
+            let randX, randY;
+
+            // Safely get target interact coordinates if available
+            let targetX = null;
+            let targetY = null;
+
+            if (e && e.type === 'touchstart' && e.touches && e.touches.length > 0) {
+                targetX = e.touches[0].clientX;
+                targetY = e.touches[0].clientY;
+            } else if (e && typeof e.clientX === 'number') {
+                targetX = e.clientX;
+                targetY = e.clientY;
+            }
+
+            // Attempt to find a suitable location far enough away from the pointer
+            let attempts = 0;
+            let minDistance = 150; // Minimum safe distance in pixels
+
+            do {
+                randX = padding + Math.floor(Math.random() * (maxSafeX - padding + 1));
+                randY = padding + Math.floor(Math.random() * (maxSafeY - padding + 1));
+
+                if (targetX === null || targetY === null) break;
+
+                let centerX = randX + btnWidth / 2;
+                let centerY = randY + btnHeight / 2;
+                let distance = Math.hypot(centerX - targetX, centerY - targetY);
+
+                if (distance > minDistance) {
+                    break;
+                }
+                attempts++;
+                // If the screen is too small, reduce requirements so it doesn't get stuck
+                if (attempts > 10) minDistance -= 20;
+
+            } while (attempts < 20);
+
+            // Absolutely confine limits. NOTHING leaves the screen boundary.
+            randX = Math.max(padding, Math.min(randX, maxSafeX));
+            randY = Math.max(padding, Math.min(randY, maxSafeY));
+
+            // Explicitly force CSS alignment. This locks it from vanishing!
+            btnNo.style.left = randX + 'px';
+            btnNo.style.top = randY + 'px';
+            btnNo.style.right = 'auto';
+            btnNo.style.bottom = 'auto';
+            btnNo.style.transform = 'none';
+        }
+
+        // Attach defensive boundary limits to both pointer and touch
+        btnNo.addEventListener('mouseenter', moveButton);
+        btnNo.addEventListener('touchstart', moveButton, { passive: false });
+        btnNo.addEventListener('click', moveButton); // Fallback
+
+        // Success animation
+        btnYes.addEventListener('click', () => {
+            successOverlay.classList.add('active');
+
+            // Clear existing hearts from previous clicks
+            const existingHearts = successOverlay.querySelectorAll('.heart');
+            existingHearts.forEach(h => h.remove());
+
+            // Generate burst of hearts for success
+            for (let i = 0; i < 60; i++) {
+                setTimeout(() => {
+                    if (successOverlay.classList.contains('active')) {
+                        createHeart(successOverlay, 'heart');
+                    }
+                }, Math.random() * 500); // Stagger generation slightly
+            }
+        });
+
+        // Reset display when clicking anywhere on the success overlay
+        successOverlay.addEventListener('click', () => {
+            successOverlay.classList.remove('active');
+
+            // Clear all injected styles to put button back exactly where it was in DOM originally
+            btnNo.style.cssText = '';
+
+            // Re-append to its original flex container so its layout flow restores fully
+            const originalContainer = document.querySelector('.buttons');
+            if (btnNo.parentElement !== originalContainer) {
+                originalContainer.appendChild(btnNo);
+            }
+        });
+    </script>
+</body>
+
+</html>
